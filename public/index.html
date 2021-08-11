@@ -13,8 +13,7 @@
     <h2 id="figyelmezteto" name="figyelmezteto"></h2>
     <h3>Fizetendő összeg: <span id="fizetendo" style="font-size: 0.83em;">0</span><span style="font-size: 0.83em;"> FT</span></h3>
     <form id="barcode_form" method="POST" action="/">
-        
-        <input type="text" id="barcode_input" name="barcode_input" /> 
+        <input type="text" id="barcode_input" name="barcode_input" style="opacity: 0;" /> 
     </form>
     <button id="barcode_add">Vonalkod Behuzása</button>
     <br>
@@ -46,7 +45,6 @@ var formatter = new Intl.NumberFormat('en-IN', {
         document.getElementById("barcode_input").focus();
         barcode_add_btn.blur();
     }
-
 
 
     $("#barcode_add_form").submit(function(e) {
