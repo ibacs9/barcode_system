@@ -47,19 +47,14 @@ var formatter = new Intl.NumberFormat('en-IN', {
         barcode_add_btn.blur();
     }
 
-/*     
-    document.querySelector('#termek_add').onclick = function(){
-        let nev = document.querySelector('#termek_nev').value
-        let ar = document.querySelector('#termek_ar').value
 
-    } */
 
     $("#barcode_add_form").submit(function(e) {
         e.preventDefault();
 
         let nev = document.querySelector('#termek_nev').value
         let ar = document.querySelector('#termek_ar').value
-        //let barcode = document.querySelector('#barcode_input').value
+  
         console.log(barcode)
         $.ajax({
                     url: '/',
@@ -76,11 +71,22 @@ var formatter = new Intl.NumberFormat('en-IN', {
                         let list = document.querySelector('#list');
                         var li = document.createElement("li");
                         li.setAttribute("id", barcode);
-                        li.innerHTML += "<b>Termék: "+response.nev+"</b> <b>Ára: "+response.ar+"FT</b> <mark>Vonalkód: "+response.barcode+"</mark>";
+
+                        response.ar = response.ar.split('.').join("");
+                        response.ar = response.ar.split(',').join("");
+
+                        li.innerHTML += "<b>Termék: "+response.nev+"</b> <b>Ára: "+formatter.format(response.ar)+"FT</b> <mark>Vonalkód: "+response.barcode+"</mark>";
                         list.appendChild(li);
-                       // console.log(fizetendo.innerHTML + response.ar)
-                        //fizetendo.innerHTML = Number(fizetendo.innerHTML) + Number(response.ar)
-                       // fizetendo.innerHTML += response.ar
+
+                        let fizetendo = document.querySelector('#fizetendo');
+
+                        fizetendo.innerHTML = fizetendo.innerHTML.split('.').join("");
+                        fizetendo.innerHTML = fizetendo.innerHTML.split(',').join("");
+
+                        teljes_osszeg = +fizetendo.innerHTML + +response.ar;
+                        teljes_osszeg = formatter.format(teljes_osszeg)
+
+                        fizetendo.innerHTML = teljes_osszeg;
                     }
                    
                   
