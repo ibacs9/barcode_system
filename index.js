@@ -45,9 +45,9 @@ function send_termek(nev2,ar2,res){
 }
 
 
-async function getTermek(barcode,res){
+function getTermek(barcode,res){
   let sql = `SELECT * FROM termekek WHERE barcode = '${barcode}'`;
-  await con.query(sql, function (err, result) {
+  con.query(sql, function (err, result) {
       if (err) throw err;
 
       if(result[0] != undefined){
@@ -63,8 +63,7 @@ async function getTermek(barcode,res){
 con.connect(function(err) {
   if (err) throw err;
   console.log("MYSQL Kapcsolodva!");
+  app.listen(3000);
 }); 
- 
-app.listen(3000)
 
 
