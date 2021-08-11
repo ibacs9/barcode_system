@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pos System</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script type="text/javascript" src="index.js"></script> -->
+</head>
+<body>
+    <h1>Barcod Lista</h1>
+    <h2 id="figyelmezteto" name="figyelmezteto"></h2>
+    <h3>Fizetendő összeg: <span id="fizetendo" style="font-size: 0.83em;">0</span><span style="font-size: 0.83em;"> FT</span></h3>
+    <form id="barcode_form" method="POST" action="/">
+        
+        <input type="text" id="barcode_input" name="barcode_input" /> 
+    </form>
+    <button id="barcode_add">Vonalkod Behuzása</button>
+    <br>
+    <form id="barcode_add_form" method="POST" action="/">
+        <input type="text" id="termek_nev" name="termek_nev"  style="opacity: 0;" />
+        <input type="text" id="termek_ar" name="termek_ar"  style="opacity: 0;" />
+        <button id="termek_add" type="submit" style="opacity: 0;" >Termék Mentés</button>
+    </form>
+    <ul id="list">
+
+    </ul>
+</body>
+</html>
+
+<script>
+    let teljes_osszeg = 0
+var formatter = new Intl.NumberFormat('en-IN', {
+  maximumSignificantDigits: 3
+});
+
+    const barcode_add_btn = document.querySelector('#barcode_add');
+    let TermekJson 
+    let barcode
+    let isBarcode = false
+ 
+
+    barcode_add_btn.onclick = function(){
+        document.querySelector('#figyelmezteto').innerHTML = "Most már elkezdheted lehúzni a vonalkodot";
+        document.getElementById("barcode_input").focus();
+        barcode_add_btn.blur();
+    }
+
+/*     
+    document.querySelector('#termek_add').onclick = function(){
+        let nev = document.querySelector('#termek_nev').value
+        let ar = document.querySelector('#termek_ar').value
+
+    } */
+
+    $("#barcode_add_form").submit(function(e) {
+        e.preventDefault();
+
+        let nev = document.querySelector('#termek_nev').value
+        let ar = document.querySelector('#termek_ar').value
+        //let barcode = document.querySelector('#barcode_input').value
+        console.log(barcode)
+        $.ajax({
+                    url: '/',
+                    type:'POST',
+                    data: {termek_nev:nev,termek_ar:ar,barcode_input:barcode}
+                }).done(response => {
+                    console.log(response)
+                    document.querySelector('#termek_nev').style.opacity = 0;
+                    document.querySelector('#termek_ar').style.opacity = 0;
+                    document.querySelector('#termek_add').style.opacity = 0;
+                    if(response.msg != undefined){
+                        document.querySelector('#figyelmezteto').innerHTML = response.msg;
+                    }else{
+                        let list = document.querySelector('#list');
+                        var li = document.createElement("li");
+                        li.setAttribute("id", barcode);
+                        li.innerHTML += "<b>Termék: "+response.nev+"</b> <b>Ára: "+response.ar+"FT</b> <mark>Vonalkód: "+response.barcode+"</mark>";
+                        list.appendChild(li);
+                       // console.log(fizetendo.innerHTML + response.ar)
+                        //fizetendo.innerHTML = Number(fizetendo.innerHTML) + Number(response.ar)
+                       // fizetendo.innerHTML += response.ar
+                    }
+                   
+                  
+                })
+    });
+
+    $("#barcode_form").submit(function(e) {
+        e.preventDefault();
+                
+                let barcode_add_input = document.forms["barcode_form"]["barcode_input"];
+
+                if(barcode_add_input.value.length >= 11){
+                    if (!isBarcode){
+                        
+                        barcode = barcode_add_input.value
+
+                        
+                        if(barcode.charAt(12) == "1"){
+                            barcode = barcode.slice(0, -1);
+                        }
+                        
+                        isBarcode = true
+                   
+
+                        $.ajax({
+                            url: '/',
+                            type:'POST',
+                            data: $("#barcode_form").serialize()
+                        }).done(response => {
+                
+                    
+                            if(response.msg != undefined){
+                                document.querySelector('#figyelmezteto').innerHTML = response.msg;
+                                document.querySelector('#termek_nev').style.opacity = 1;
+                                document.querySelector('#termek_ar').style.opacity = 1;
+                                document.querySelector('#termek_add').style.opacity = 1;
+                            }else{
+                                let list = document.querySelector('#list');
+                                var li = document.createElement("li");
+                                li.setAttribute("id", barcode);
+
+                                response.ar = response.ar.split('.').join("");
+                                response.ar = response.ar.split(',').join("");
+
+                                li.innerHTML += "<b>Termék: "+response.nev+"</b> <b>Ára: "+formatter.format(response.ar)+" ft</b> <mark>Vonalkód: "+barcode+"</mark>";
+                                list.appendChild(li);
+
+                                let fizetendo = document.querySelector('#fizetendo');
+
+                                fizetendo.innerHTML = fizetendo.innerHTML.split('.').join("");
+                                fizetendo.innerHTML = fizetendo.innerHTML.split(',').join("");
+                               
+                                teljes_osszeg = +fizetendo.innerHTML + +response.ar;
+                                teljes_osszeg = formatter.format(teljes_osszeg)
+
+                                fizetendo.innerHTML = teljes_osszeg;
+                   
+                                barcode_add_input.value = ""
+                            
+                                setTimeout(function(){
+                                    isBarcode = false
+                                }, 300)
+                            }
+                            
+                            
+                        
+                        })
+                    }else{
+                            barcode_add_input.value = ""
+                        
+                    }
+                }else{
+                    barcode_add_input.value = ""
+                } 
+         
+    });
+
+    
+    
+</script>
