@@ -25,8 +25,11 @@ app.post('/',urlencodedParser,(req,res)=>{
     console.log(req.body.termek_nev);
     console.log(req.body.barcode_input);
     console.log(req.body.termek_ar);
+    let barcode = con.escape(req.body.barcode_input)
+    let termek_nev = con.escape(req.body.termek_nev)
+    let termek_ar = con.escape(req.body.termek_ar)
 
-    var sql = "INSERT INTO termekek (barcode, nev, ar) VALUES ('"+req.body.barcode_input+"', '"+req.body.termek_nev+"', '"+req.body.termek_ar+"')";
+    var sql = "INSERT INTO termekek (barcode, nev, ar) VALUES ('"+barcode+"', '"+termek_nev+"', '"+termek_ar+"')";
     con.query(sql, function (err, result) {
       if (err) throw err;
       res.json({ nev:req.body.termek_nev,ar:req.body.termek_ar,barcode:req.body.barcode_input });
@@ -46,6 +49,7 @@ function send_termek(nev2,ar2,res){
 
 
 function getTermek(barcode,res){
+  let barcode = con.escape(barcode)
   let sql = `SELECT * FROM termekek WHERE barcode = '${barcode}'`;
   con.query(sql, function (err, result) {
       if (err) throw err;
