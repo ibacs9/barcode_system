@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pos System</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- <script type="text/javascript" src="index.js"></script> -->
 </head>
 <body>
     <h1>Barcod Lista</h1>
@@ -52,14 +51,13 @@ var formatter = new Intl.NumberFormat('en-IN', {
 
         let nev = document.querySelector('#termek_nev').value
         let ar = document.querySelector('#termek_ar').value
-  
-        console.log(barcode)
+
         $.ajax({
                     url: '/',
                     type:'POST',
                     data: {termek_nev:nev,termek_ar:ar,barcode_input:barcode}
                 }).done(response => {
-                    console.log(response)
+
                     document.querySelector('#termek_nev').style.opacity = 0;
                     document.querySelector('#termek_ar').style.opacity = 0;
                     document.querySelector('#termek_add').style.opacity = 0;
